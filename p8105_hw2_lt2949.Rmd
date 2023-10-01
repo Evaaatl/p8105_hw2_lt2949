@@ -1,6 +1,6 @@
 ---
 title: "p8105_hw2_lt2949"
-output: html_document
+output: github_document
 date: "2023-10-01"
 ---
 
