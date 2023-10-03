@@ -5,5 +5,56 @@ date: "2023-10-01"
 ---
 
 ```{r}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+```
+
+##Problem2
+```{r}
+#Import and clean Mr.Trash Wheel data
+mr_trash_wheel <- 
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 1, range = "A2:N549") |>
+  janitor::clean_names() |>
+  filter(!is.na(dumpster))|>
+  mutate(homes_powered = (weight_tons * 500) %/% 30)
+
+#Import and clean Professor Trash Wheel data
+prof_trash_wheel <- 
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 2, range = "A2:M96") |>
+  janitor::clean_names() |>
+  filter(!is.na(dumpster))|>
+  mutate(homes_powered = (weight_tons * 500) %/% 30)
+
+#Import and clean Gwynnda Trash Wheel data
+gwy_trash_wheel <- 
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 4, range = "A2:K108") |>
+  janitor::clean_names() |>
+  filter(!is.na(dumpster))|>
+  mutate(homes_powered = (weight_tons * 500) %/% 30)
+
+#Add a new variable 
+mr_trash_wheel <- mr_trash_wheel %>% mutate(wheel_name = "Mr. Trash Wheel")
+
+prof_trash_wheel <- prof_trash_wheel %>% mutate(wheel_name = "Professor Trash Wheel")
+
+gwy_trash_wheel <- gwy_trash_wheel %>% mutate(wheel_name = "Gwynnda Trash Wheel")
+
+#Covert "year" to numeric
+mr_trash_wheel$year <- as.numeric(mr_trash_wheel$year)
+prof_trash_wheel$year <- as.numeric(prof_trash_wheel$year)
+gwy_trash_wheel$year <- as.numeric(gwy_trash_wheel$year)
+
+#Combine all datasets
+trash_wheel_collection <- bind_rows(mr_trash_wheel, prof_trash_wheel, gwy_trash_wheel)
+str(trash_wheel_collection)
 
 ```
+The `trash_wheel_collection dataset` is a combination of three datasets(`mr_trash_wheel`,`prof_trash_wheel`,`gwy_trash_wheel`). It comprises `r nrow(trash_wheel_collection)` observations and `rncol(trash_wheel_collection)` variables. In `trash_wheel_collection` dataset, there are collection date information variables(i.e. `date`), the total weight of trash variable(i.e. `weight_tons`), types of trash variables(i.e. `plastic_bags`), and derived data variable(i.e. `homes_powered`). For available data, the total weight of trash collected by Professor Trash Wheel is `r sum(prof_trash_wheel$weight_tons)`, and the total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(gwy_trash_wheel$cigarette_butts[gwy_trash_wheel$month == "July" & gwy_trash_wheel$year == 2021])`.
+
+
+##Problem3
+```{r}
+
+```
+
