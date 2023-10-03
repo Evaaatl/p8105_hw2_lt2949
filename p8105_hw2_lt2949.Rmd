@@ -9,6 +9,11 @@ library(tidyverse)
 library(readxl)
 library(dplyr)
 ```
+##Problem1
+```{r}
+
+```
+
 
 ##Problem2
 ```{r}
@@ -50,7 +55,7 @@ trash_wheel_collection <- bind_rows(mr_trash_wheel, prof_trash_wheel, gwy_trash_
 str(trash_wheel_collection)
 
 ```
-The `trash_wheel_collection dataset` is a combination of three datasets(`mr_trash_wheel`,`prof_trash_wheel`,`gwy_trash_wheel`). It comprises `r nrow(trash_wheel_collection)` observations and `rncol(trash_wheel_collection)` variables. In `trash_wheel_collection` dataset, there are collection date information variables(i.e. `date`), the total weight of trash variable(i.e. `weight_tons`), types of trash variables(i.e. `plastic_bags`), and derived data variable(i.e. `homes_powered`). For available data, the total weight of trash collected by Professor Trash Wheel is `r sum(prof_trash_wheel$weight_tons)`, and the total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(gwy_trash_wheel$cigarette_butts[gwy_trash_wheel$month == "July" & gwy_trash_wheel$year == 2021])`.
+The `trash_wheel_collection dataset` is a combination of three datasets(`mr_trash_wheel`,`prof_trash_wheel`,`gwy_trash_wheel`). It comprises `r nrow(trash_wheel_collection)` observations and `r ncol(trash_wheel_collection)` variables. In `trash_wheel_collection` dataset, there are collection date information variables(i.e. `date`), the total weight of trash variable(i.e. `weight_tons`), types of trash variables(i.e. `plastic_bags`), and derived data variable(i.e. `homes_powered`). For available data, the total weight of trash collected by Professor Trash Wheel is `r sum(prof_trash_wheel$weight_tons)`, and the total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(gwy_trash_wheel$cigarette_butts[gwy_trash_wheel$month == "July" & gwy_trash_wheel$year == 2021])`.
 
 
 ##Problem3
