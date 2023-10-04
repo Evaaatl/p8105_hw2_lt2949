@@ -9,31 +9,84 @@ library(tidyverse)
 library(readxl)
 library(dplyr)
 ```
-##Problem1
-```{r}
 
+
+# Problem1
+Clean the data in `pols-month.csv` and replace the month number with month name. 
+```{r}
+#Clean the data in 'pols-month.csv'
+month_df = 
+  tibble(
+    month_num = 1:12,
+    month_abb = month.abb,
+    month = month.name
+  )
+
+pols = 
+  read_csv("./fivethirtyeight_datasets/pols-month.csv") |>
+  separate(mon, into = c("year", "month_num", "day"), convert = TRUE) |>
+  mutate(
+    president = recode(prez_gop, "0" = "dem", "1" = "gop", "2" = "gop")) |>
+  left_join(x = _, y = month_df) |> 
+  select(year, month, everything(), -day, -starts_with("prez"))
 ```
 
+Clean the data in `snp.csv` with similar method.
+```{r}
+#Clean the data in 'snp.csv'
+snp = 
+  read_csv("./fivethirtyeight_datasets/snp.csv") |>
+  separate(date, into = c("month", "day", "year"), convert = TRUE) |>
+  arrange(year, month) |>
+  mutate(month = month.name[month]) |>
+  select(year, month, close) 
+```
 
-##Problem2
+We tidy the `unemployment` data so that it can be merged with the `pols` and `snp` datasets.
+```{r}
+#Clean the data in 'umemployment.csv'
+unemployment = 
+  read_csv("./fivethirtyeight_datasets/unemployment.csv") |>
+  rename(year = Year) |>
+  pivot_longer(
+    Jan:Dec, 
+    names_to = "month_abb",
+    values_to = "unemployment"
+  ) |> 
+  left_join(x = _, y = month_df) |> 
+  select(year, month, unemployment)
+```
+
+Merge the three datasets.
+```{r merge_538}
+data_538 = 
+  left_join(pols, snp) |>
+  left_join(x = _, y = unemployment)
+
+str(data_538)
+```
+The merged dataset is derived from the three previously sets, unified using 'year' and 'month' as criteria. Covering a spectrum of political, economic, and unemployment metrics, its coverage extends from 1947 through 2015. The `combined_data` set holds 822 records across 11 distinct columns. Key variables present in this set are: `year`, `month`, `gov_gop`, `sen_gop`, `rep_gop`, `gov_dem`, `sen_dem`, `rep_dem`, `president`, `close`, and `unemployment_rate`.
+
+
+# Problem2
 ```{r}
 #Import and clean Mr.Trash Wheel data
 mr_trash_wheel <- 
-  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 1, range = "A2:N549") |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 1, range = "A2:N586") |>
   janitor::clean_names() |>
   filter(!is.na(dumpster))|>
   mutate(homes_powered = (weight_tons * 500) %/% 30)
 
 #Import and clean Professor Trash Wheel data
 prof_trash_wheel <- 
-  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 2, range = "A2:M96") |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 2, range = "A2:M108") |>
   janitor::clean_names() |>
   filter(!is.na(dumpster))|>
   mutate(homes_powered = (weight_tons * 500) %/% 30)
 
 #Import and clean Gwynnda Trash Wheel data
 gwy_trash_wheel <- 
-  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 4, range = "A2:K108") |>
+  read_excel("202309 Trash Wheel Collection Data.xlsx", sheet = 4, range = "A2:L157") |>
   janitor::clean_names() |>
   filter(!is.na(dumpster))|>
   mutate(homes_powered = (weight_tons * 500) %/% 30)
@@ -45,7 +98,7 @@ prof_trash_wheel <- prof_trash_wheel %>% mutate(wheel_name = "Professor Trash Wh
 
 gwy_trash_wheel <- gwy_trash_wheel %>% mutate(wheel_name = "Gwynnda Trash Wheel")
 
-#Covert "year" to numeric
+#Convert "year" to numeric
 mr_trash_wheel$year <- as.numeric(mr_trash_wheel$year)
 prof_trash_wheel$year <- as.numeric(prof_trash_wheel$year)
 gwy_trash_wheel$year <- as.numeric(gwy_trash_wheel$year)
@@ -55,11 +108,13 @@ trash_wheel_collection <- bind_rows(mr_trash_wheel, prof_trash_wheel, gwy_trash_
 str(trash_wheel_collection)
 
 ```
-The `trash_wheel_collection dataset` is a combination of three datasets(`mr_trash_wheel`,`prof_trash_wheel`,`gwy_trash_wheel`). It comprises `r nrow(trash_wheel_collection)` observations and `r ncol(trash_wheel_collection)` variables. In `trash_wheel_collection` dataset, there are collection date information variables(i.e. `date`), the total weight of trash variable(i.e. `weight_tons`), types of trash variables(i.e. `plastic_bags`), and derived data variable(i.e. `homes_powered`). For available data, the total weight of trash collected by Professor Trash Wheel is `r sum(prof_trash_wheel$weight_tons)`, and the total number of cigarette butts collected by Gwynnda in July of 2021 is `r sum(gwy_trash_wheel$cigarette_butts[gwy_trash_wheel$month == "July" & gwy_trash_wheel$year == 2021])`.
+
+The `trash_wheel_collection` dataset combines three separate datasets: `mr_trash_wheel`, `prof_trash_wheel`, and `gwy_trash_wheel`. It consists of `r nrow(trash_wheel_collection)` observations and `r ncol(trash_wheel_collection)` variables. Within the `trash_wheel_collection` dataset, there are variables detailing collection dates (i.e., `date`), a variable representing the total weight of the trash (i.e., `weight_tons`), variables denoting different types of trash (e.g., `plastic_bags`), and a derived data variable (i.e., `homes_powered`). According to the available data, Professor Trash Wheel collected a total weight of `r sum(prof_trash_wheel$weight_tons)` tons of trash. Additionally, in July 2021, Gwynnda collected `r sum(gwy_trash_wheel$cigarette_butts[gwy_trash_wheel$month == "July" & gwy_trash_wheel$year == 2021])` cigarette butts.
 
 
-##Problem3
+# Problem3
 ```{r}
+
 
 ```
 
