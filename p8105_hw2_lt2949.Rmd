@@ -129,7 +129,7 @@ baseline <-
 baseline_meet <- filter(baseline, is.na(age_at_onset) | age_at_onset == "." | current_age < age_at_onset)
 
 # Filter the number of participants who developed MCI
-mci_developed <- filter(baseline_meet, !is.na(age_at_onset) & age_at_onset != ".")
+mci_developed <- filter(baseline_meet, !is.na(age_at_onset) | age_at_onset != ".")
 
 # Statistics process
 women_apoe4_carriers <- sum(baseline$sex == "female" & baseline$apoe4 == "carrier")
@@ -143,13 +143,18 @@ After importing the data, we convert the variables `sex` and `apoe4` to more mea
 amyloid <- 
   read.csv("data_mci/mci_amyloid.csv", skip = 1) |>
   janitor::clean_names()
+  
+amyloid_tidy <- pivot_longer(amyloid, baseline:time_8, names_to = "time", values_to = "years")
+```
+After using "pivot_longer" funtion, `amyloid_tidy` dataset has `r nrow(amyloid_tidy)` ovbservations and `r ncol(amyloid_tidy)` variables.
 
+```{r}
 # Combine datasets
-combined_mci <- merge(baseline_meet, amyloid, by = "study_id")
+combined_mci <- merge(baseline_meet, amyloid_tidy, by = "study_id")
 
 # Check participants in only one of the datasets
-only_baseline <- setdiff(baseline_meet$study_id, amyloid$study_id)
-only_amyloid <- setdiff(amyloid$study_id, baseline_meet$study_id)
+only_baseline <- setdiff(baseline_meet$study_id, amyloid_tidy$study_id)
+only_amyloid <- setdiff(amyloid_tidy$study_id, baseline_meet$study_id)
 
 # Exporting the combined_mci to a CSV file
 write.csv(combined_mci, "data_mci/combined_mci.csv", row.names = FALSE)
