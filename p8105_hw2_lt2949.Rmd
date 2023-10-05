@@ -114,10 +114,6 @@ The `trash_wheel_collection` dataset combines three separate datasets: `mr_trash
 
 # Problem3
 ```{r}
-library(tidyverse)
-library(janitor)
-library(lubridate)
-
 # Import and clean the baseline
 baseline <- 
   read.csv("data_mci/MCI_baseline.csv", skip = 1) |>
